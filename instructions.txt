@@ -1,0 +1,46 @@
+To use this app:
+
+Install Expo CLI: npm install -g expo-cli
+
+Create new project: expo init AttendanceApp
+
+Replace the App.js content with the code above
+
+Install required dependencies: expo install @react-native-async-storage/async-storage
+
+Run the app: expo start
+
+Key differences from the web version:
+
+Uses React Native components instead of HTML
+
+Implements AsyncStorage for data persistence
+
+Mobile-friendly UI with touch interactions
+
+Responsive layout using Flexbox
+
+No separate CSS file - styles are defined using StyleSheet
+
+Built-in form validation using Alert component
+
+Mobile-optimized input fields with proper keyboard types
+
+Features:
+
+Add students with all details
+
+Track present/medical leave counts
+
+Automatic percentage calculation
+
+Data persistence using AsyncStorage
+
+Reset all attendance records
+
+Mobile-friendly table layout
+
+Touch-based interactions
+
+The app maintains all the core functionality of the original web version while adapting it to mobile platform conventions and capabilities.
+
