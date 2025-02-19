@@ -1,0 +1,171 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>College Attendance Tracker</title>
+    <link rel="stylesheet" href="styles.css">
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            background-color: #f4f4f4;
+            text-align: center;
+        }
+        .container {
+            width: 80%;
+            margin: auto;
+            background: white;
+            padding: 20px;
+            border-radius: 10px;
+            box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+        }
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            margin-top: 20px;
+        }
+        th, td {
+            border: 1px solid #ddd;
+            padding: 10px;
+            text-align: center;
+        }
+        th {
+            background-color: #007BFF;
+            color: white;
+        }
+        button {
+            margin: 5px;
+            padding: 8px 15px;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+        }
+        .reset-btn {
+            background-color: #dc3545;
+            color: white;
+        }
+        .present-btn {
+            background-color: #28a745;
+            color: white;
+        }
+        .absent-btn {
+            background-color: #ffc107;
+            color: black;
+        }
+        input {
+            padding: 8px;
+            margin: 5px;
+            width: 200px;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>College Attendance Tracker</h1>
+        <div class="form-group">
+            <input type="text" id="name" placeholder="Student Name">
+            <input type="text" id="roll" placeholder="Roll Number">
+            <input type="text" id="branch" placeholder="Branch">
+            <input type="text" id="contact" placeholder="Contact Number">
+            <input type="email" id="email" placeholder="Email">
+            <button onclick="addStudent()">Add Student</button>
+        </div>
+        <table>
+            <thead>
+                <tr>
+                    <th>Roll Number</th>
+                    <th>Name</th>
+                    <th>Branch</th>
+                    <th>Attendance</th>
+                    <th>Medical Leave</th>
+                    <th>Attendance %</th>
+                    <th>Actions</th>
+                </tr>
+            </thead>
+            <tbody id="studentList"></tbody>
+        </table>
+        <button onclick="resetAttendance()" class="reset-btn">Reset Attendance</button>
+        <button onclick="displayAttendance()">Show Attendance Records</button>
+        <div id="attendanceRecords"></div>
+    </div>
+
+    <script>
+        document.addEventListener("DOMContentLoaded", function() {
+            loadStudents();
+        });
+
+        function loadStudents() {
+            let students = JSON.parse(localStorage.getItem("students")) || [];
+            let studentList = document.getElementById("studentList");
+            studentList.innerHTML = "";
+            students.forEach(student => {
+                let row = studentList.insertRow();
+                row.insertCell(0).textContent = student.roll;
+                row.insertCell(1).textContent = student.name;
+                row.insertCell(2).textContent = student.branch;
+                row.insertCell(3).textContent = student.present;
+                row.insertCell(4).textContent = student.medical;
+                row.insertCell(5).textContent = student.percentage;
+                let actionsCell = row.insertCell(6);
+                actionsCell.innerHTML = `<button class='present-btn' onclick='markPresent("${student.roll}")'>Present</button>
+                                        <button class='absent-btn' onclick='markAbsent("${student.roll}")'>Absent</button>`;
+            });
+        }
+
+        function addStudent() {
+            let name = document.getElementById("name").value;
+            let roll = document.getElementById("roll").value;
+            let branch = document.getElementById("branch").value;
+            let contact = document.getElementById("contact").value;
+            let email = document.getElementById("email").value;
+            if (name === "" || roll === "" || branch === "" || contact === "" || email === "") {
+                alert("Please enter all student details.");
+                return;
+            }
+            let students = JSON.parse(localStorage.getItem("students")) || [];
+            students.push({ roll, name, branch, present: 0, medical: 0, percentage: "0%" });
+            localStorage.setItem("students", JSON.stringify(students));
+            loadStudents();
+        }
+
+        function markPresent(roll) {
+            let students = JSON.parse(localStorage.getItem("students")) || [];
+            students.forEach(student => {
+                if (student.roll === roll) {
+                    student.present++;
+                    student.percentage = ((student.present / (student.present + student.medical)) * 100).toFixed(2) + "%";
+                }
+            });
+            localStorage.setItem("students", JSON.stringify(students));
+            loadStudents();
+        }
+
+        function markAbsent(roll) {
+            let students = JSON.parse(localStorage.getItem("students")) || [];
+            students.forEach(student => {
+                if (student.roll === roll) {
+                    student.medical++;
+                    student.percentage = ((student.present / (student.present + student.medical)) * 100).toFixed(2) + "%";
+                }
+            });
+            localStorage.setItem("students", JSON.stringify(students));
+            loadStudents();
+        }
+
+        function displayAttendance() {
+            let records = JSON.parse(localStorage.getItem("students")) || [];
+            let output = "<h2>Attendance Records</h2><table><tr><th>Roll Number</th><th>Name</th><th>Branch</th><th>Present</th><th>Medical Leave</th><th>Attendance %</th></tr>";
+            records.forEach(student => {
+                output += `<tr><td>${student.roll}</td><td>${student.name}</td><td>${student.branch}</td><td>${student.present}</td><td>${student.medical}</td><td>${student.percentage}</td></tr>`;
+            });
+            output += "</table>";
+            document.getElementById("attendanceRecords").innerHTML = output;
+        }
+
+        function resetAttendance() {
+            localStorage.removeItem("students");
+            loadStudents();
+        }
+    </script>
+</body>
+</html>
